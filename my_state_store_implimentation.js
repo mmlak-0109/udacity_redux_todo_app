@@ -47,7 +47,28 @@ function todos(state = [], action) {
     }
 };
 
-const store = createStore(todos);
+function goals(state = [], action) {
+    switch(action.type) {
+        case 'ADD_GOAL':
+            return state.concat([action.goal])
+        case 'REMOVE_GOAL':
+            return state.filter((goal) => goal.id !== action.id)
+        default:
+            return state
+    }
+};
+
+// root reducer that takes in a state object and calls all our other reducers,
+// passing them their respective parts of the state
+function app(state = {}, action) {
+    return {
+        todos: todos(state.todos, action),
+        goals: goals(state.goals, action),
+    }
+};
+
+const store = createStore(app);
+
 store.subscribe(() => {
     console.log('The new state is: ', store.getState())
 });

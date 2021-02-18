@@ -122,34 +122,6 @@
                 }
             };
 
-            // root reducer that takes in a state object and calls all our other reducers,
-            // passing them their respective parts of the state
-            function app(state = {}, action) {
-                return {
-                    todos: todos(state.todos, action),
-                    goals: goals(state.goals, action),
-                }
-            };
-
-            const store = createStore(app);
-
-            store.subscribe(() => {
-                const {goals, todos} = store.getState()
-
-                document.getElementById('goals').innerHTML = ""
-                document.getElementById('todos').innerHTML = ""
-                
-                goals.forEach(addGoalToDom)
-                todos.forEach(addGoalToDom)
-            });
-
-            // store.dispatch(addTodoAction({
-            //         id: 0,
-            //         name: 'Learn Redux',
-            //         complete: false
-            //     }
-            // ));
-
             //  DOM Code
             function addTodo() {
                 const input = document.getElementById('todo')
@@ -182,10 +154,27 @@
             document.getElementById('goalBtn')
                 .addEventListener('click', addGoal)
             
+            function createRemoveButton(onClick) {
+                const removeBtn = document.createElement('button')
+                removeBtn.innerHTML = 'X'
+                removeBtn.addEventListener('click', onClick)
+                return removeBtn
+            }
+            
             function addTodoToDom(todo) {
                 const node = document.createElement('li')
                 const text = document.createTextNode(todo.name)
+
+                const removeBtn = createRemoveButton(() => {
+                    store.dispatch(removeTodoAction(todo.id))
+                })
+
                 node.appendChild(text)
+                node.appendChild(removeBtn)
+                node.style.textDecoration = todo.complete ? 'line-through' : 'none'
+                node.addEventListener('click', () => {
+                    store.dispatch(toggleTodoAction(todo.id))
+                })
 
                 document.getElementById('todos')
                     .appendChild(node)
@@ -199,6 +188,28 @@
                 document.getElementById('goals')
                     .appendChild(node)
             }
+
+            // root reducer that takes in a state object and calls all our other reducers,
+            // passing them their respective parts of the state
+            function app(state = {}, action) {
+                return {
+                    todos: todos(state.todos, action),
+                    goals: goals(state.goals, action),
+                }
+            };
+
+            const store = createStore(app);
+
+            store.subscribe(() => {
+                const {goals, todos} = store.getState()
+
+                document.getElementById('goals').innerHTML = ""
+                document.getElementById('todos').innerHTML = ""
+                
+                goals.forEach(addGoalToDom)
+                todos.forEach(addTodoToDom)
+            });
+
         </script>
     </body>
 </html>

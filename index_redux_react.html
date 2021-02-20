@@ -22,6 +22,7 @@
         </div>
         <hr />
         <div id='app'></div>
+        
         <script type="text/javascript">
             function generateId() {
                 return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
@@ -35,7 +36,7 @@
             const REMOVE_GOAL = 'REMOVE_GOAL';
 
             function addTodoAction(todo) {
-                return {3
+                return {
                     type: ADD_TODO,
                     todo
                 }
@@ -226,6 +227,7 @@
         </script>
 
         <script type="text/babel">
+            
             function List(props) {
                 return (
                     <ul>
@@ -235,11 +237,29 @@
             }
 
             class Todos extends React.Component {
+                addItem = (e) => {
+                    e.preventDefault()
+                    const name = this.input.value
+                    this.input.value = ''
+
+                    this.props.store.dispatch(addTodoAction({
+                        id: generateId(),
+                        name: name,
+                        complete: false
+                        }
+                    ));
+                }
+
                 render() {
                     return(
                         <div>
-                            Todos
-
+                            <h1>Todo List</h1>
+                            <input 
+                                type="text"
+                                placeholder="Add Todo"
+                                ref={(input) => this.input = input}
+                            />
+                            <button onClick={this.addItem}>Add Todo</button>
                             <List />
                         </div>
                     )
@@ -262,7 +282,7 @@
                 render() {
                     return (
                         <div>
-                            <Todos />
+                            <Todos store={this.props.store} />
                             <Goals />
                         </div>
                     )
@@ -270,7 +290,7 @@
             }
 
             ReactDOM.render(
-                <App />,
+                <App store={store} />,
                 document.getElementById('app')
             )
         </script>
